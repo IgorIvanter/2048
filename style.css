@@ -26,6 +26,7 @@ body {
 
 main {
     margin: auto;
+    margin-top: 120px;
 }
 
 .row {
