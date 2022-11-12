@@ -11,10 +11,15 @@ const cellLengthStr = `106`   // TODO: make this constant adapt to the particula
 const swipeSpeed = 300
 
 const COLORS = {
-    "1" : "green",
-    "2" : "brown",
-    "4" : "blue",
-    "8" : "yellow"
+    "1" : "lightgreen",
+    "2" : "green",
+    "4" : "brown",
+    "8" : "darkred",
+    "16": "red",
+    "32": "cyan",
+    "64": "aquamarine",
+    "128": "blue",
+    "256": "violet"
 }       
 
 // The object COLORS defines the color of a number depending on it's value
@@ -29,6 +34,7 @@ class Number {
         this.body.setAttribute("class", "number")
         this.body.style.top = `${cellY * cellLengthStr}px`
         this.body.style.left = `${cellX * cellLengthStr}px`
+        this.body.style.opacity = "0"
         this.x = cellX
         this.y = cellY
         this.value = value
@@ -36,6 +42,25 @@ class Number {
         this.valueElement.innerText = `${value}`
         this.body.appendChild(this.valueElement)
         origin.appendChild(this.body)
+        this.animateAppearing()
+    }
+
+    animateAppearing = async () => {
+        const translationTiming = {
+            duration: swipeSpeed, iterations: 1
+        }
+        const translationKeyFrames = [
+            {
+                opacity: "0"
+            },
+            {
+                opacity: "1"
+            }
+        ]
+
+        await this.body.animate(translationKeyFrames, translationTiming)
+
+        this.body.style.opacity = "1"
     }
 
     setValue = (newValue) => {
@@ -326,17 +351,3 @@ window.addEventListener("keydown", (e) => {
             break;
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,16 +3,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-/* 
-main {
-    margin: auto;
-    display: grid;
-    width: 70vw;
-    height: 53vh;
-    grid-template-rows: repeat(4, 1fr);
-    grid-template-columns: repeat(4, 1fr);
-    border: 2px solid black;
-} */
 
 body {
     display: flex;
@@ -25,8 +15,7 @@ body {
 }
 
 main {
-    margin: auto;
-    margin-top: 120px;
+    margin: 90px;
 }
 
 .row {
