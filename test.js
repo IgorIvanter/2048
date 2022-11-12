@@ -1,10 +1,14 @@
 const origin = document.getElementById("origin")
+const body   = document.querySelector("body")
+const main   = document.querySelector("main")
 
-const undef = undefined     // TODO: think what to do with this thing
+const undef  = undefined     // TODO: think what to do with this thing
 
                             // maybe define some empty number...
 
 const cellLengthStr = `106`   // TODO: make this constant adapt to the particular board dimensions
+
+const swipeSpeed = 300
 
 const COLORS = {
     "1" : "green",
@@ -51,7 +55,7 @@ class Number {
         }
 
         const translationTiming = {
-            duration: 500, iterations: 1
+            duration: swipeSpeed, iterations: 1
         }
         const translationKeyFrames = [
             {
@@ -91,6 +95,26 @@ class Number {
     }
 }
 
+// TODO: replace undef with an emptyNumber everywhere
+
+class EmptyNumber extends Number {
+    constructor(cellX, cellY, board) {
+        this.board = board
+        this.body = document.createElement("div")
+        this.body.style.backgroundColor = this.backgroundColor = COLORS[value.toString()]
+        this.body.setAttribute("class", "number")
+        this.body.style.top = `${cellY * cellLengthStr}px`
+        this.body.style.left = `${cellX * cellLengthStr}px`
+        this.x = cellX
+        this.y = cellY
+        this.value = value
+        this.valueElement = document.createElement("h1")
+        this.valueElement.innerText = `${value}`
+        this.body.appendChild(this.valueElement)
+        origin.appendChild(this.body)
+    }
+}
+
 class Board {
     constructor() {
         this.cellLengthStr = `106`
@@ -107,6 +131,8 @@ class Board {
         this.structure[initialX][initialY] = new Number(initialX, initialY, value, this)
     }
 
+    // It would be nice to unify these 4 very similar functions into one
+
     swipeRight = async () => {
         for (let i = 0; i <= 3; ++i) {
             let columnToCompare = 3;
@@ -117,7 +143,6 @@ class Board {
                 if (current === undef) {
                     continue
                 } else if (main === undef) {
-                    // console.log(`I am in the 2 clause. The number moving is ${current.value} from (${current.x}, ${current.y}). Main is at (${columnToCompare}, ${i})`)
                     await current.move(columnToCompare, i)
                     continue
                 }
@@ -125,8 +150,6 @@ class Board {
                 let mainNumberValue = this.structure[columnToCompare][i].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    //console.log(`I am in the 3 clause. The number moving is ${current.value} from (${current.x}, ${current.y}`)
-
                     current.setValue(2 * mainNumberValue)
                     await current.move(columnToCompare, i)
                     mainNumberValue *= 2
@@ -134,14 +157,12 @@ class Board {
                     console.log(this.structure[columnToCompare][i])
                     columnToCompare--
                 } else {
-                    //console.log(`I am in the 4 clause. The number moving is ${current.value} from (${current.x}, ${current.y})`)
-
                     columnToCompare--
                     await current.move(columnToCompare, i)
                 }
             }
         }
-        // spawnRandomNumbers()
+        this.spawnRandomNumber()
     }
 
     swipeLeft = async () => {
@@ -154,7 +175,6 @@ class Board {
                 if (current === undef) {
                     continue
                 } else if (main === undef) {
-                    // console.log(`I am in the 2 clause. The number moving is ${current.value} from (${current.x}, ${current.y}). Main is at (${columnToCompare}, ${i})`)
                     await current.move(columnToCompare, i)
                     continue
                 }
@@ -162,8 +182,6 @@ class Board {
                 let mainNumberValue = this.structure[columnToCompare][i].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    //console.log(`I am in the 3 clause. The number moving is ${current.value} from (${current.x}, ${current.y}`)
-
                     current.setValue(2 * mainNumberValue)
                     await current.move(columnToCompare, i)
                     mainNumberValue *= 2
@@ -171,14 +189,12 @@ class Board {
                     console.log(this.structure[columnToCompare][i])
                     columnToCompare++
                 } else {
-                    //console.log(`I am in the 4 clause. The number moving is ${current.value} from (${current.x}, ${current.y})`)
-
                     columnToCompare++
                     await current.move(columnToCompare, i)
                 }
             }
         }
-        // spawnRandomNumbers()
+        this.spawnRandomNumber()
     }
 
     swipeUp = async () => {
@@ -191,7 +207,6 @@ class Board {
                 if (current === undef) {
                     continue
                 } else if (main === undef) {
-                    // console.log(`I am in the 2 clause. The number moving is ${current.value} from (${current.x}, ${current.y}). Main is at (${columnToCompare}, ${i})`)
                     await current.move(j, rowToCompare)
                     continue
                 }
@@ -199,22 +214,18 @@ class Board {
                 let mainNumberValue = this.structure[j][rowToCompare].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    //console.log(`I am in the 3 clause. The number moving is ${current.value} from (${current.x}, ${current.y}`)
-
                     current.setValue(2 * mainNumberValue)
                     await current.move(j, rowToCompare)
                     mainNumberValue *= 2
                     current.setValue(mainNumberValue)
                     rowToCompare++
                 } else {
-                    //console.log(`I am in the 4 clause. The number moving is ${current.value} from (${current.x}, ${current.y})`)
-
                     rowToCompare++
                     await current.move(j, rowToCompare)
                 }
             }
         }
-        // spawnRandomNumbers()
+        this.spawnRandomNumber()
     }
 
     swipeDown = async () => {
@@ -227,7 +238,6 @@ class Board {
                 if (current === undef) {
                     continue
                 } else if (main === undef) {
-                    // console.log(`I am in the 2 clause. The number moving is ${current.value} from (${current.x}, ${current.y}). Main is at (${columnToCompare}, ${i})`)
                     await current.move(j, rowToCompare)
                     continue
                 }
@@ -235,8 +245,6 @@ class Board {
                 let mainNumberValue = this.structure[j][rowToCompare].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    //console.log(`I am in the 3 clause. The number moving is ${current.value} from (${current.x}, ${current.y}`)
-
                     current.setValue(2 * mainNumberValue)
                     await current.move(j, rowToCompare)
                     mainNumberValue *= 2
@@ -244,14 +252,53 @@ class Board {
                     console.log(this.structure[j][rowToCompare])
                     rowToCompare--
                 } else {
-                    //console.log(`I am in the 4 clause. The number moving is ${current.value} from (${current.x}, ${current.y})`)
-
                     rowToCompare--
                     await current.move(j, rowToCompare)
                 }
             }
         }
-        // spawnRandomNumbers()
+        this.spawnRandomNumber()
+    }
+
+    spawnRandomNumber = () => {
+        function getRandomNatural(max) {
+            if (max < 1) {
+                throw new RangeError("getRandomNatural takes a number > 1 as argument")
+            }
+            return 1 + Math.round((max - 1) * Math.random())
+        }
+        
+        function spawnRandomNumbers() {
+            for (let i = 0; i <= 3; ++i) {
+                for (let j = 0; j <= 3; ++j) {
+                    if (table[i][j].innerText === PLACEHOLDER) {
+                        table[i][j].innerText = getRandomNatural(2)
+                        return 0
+                    }
+                }
+            }
+            console.log("Game Over")
+            return 1
+        }
+
+        const emptyNumbers = []
+        for (let i = 0; i <= 3; i++) {
+            for (let j = 0; j <= 3; j++) {
+                if (!this.structure[i][j]) {
+                    emptyNumbers.push([i, j])
+                }
+            }
+        }
+        if (emptyNumbers.length == 0) {
+            const gameOverHeading = document.createElement("h1")
+            gameOverHeading.innerText = "Game Over!"
+            main.appendChild(gameOverHeading)
+            // FIX: this is not a game over yet. Other moves can be done.
+            // here the game must reset
+        } else {
+            const newNumberCoordinates = emptyNumbers[getRandomNatural(emptyNumbers.length) - 1]
+            this.addNumber(newNumberCoordinates[0], newNumberCoordinates[1], getRandomNatural(2))
+        }
     }
 }
 
@@ -259,21 +306,26 @@ class Board {
 
 const mainBoard = new Board
 
-mainBoard.addNumber(0, 0, 2)
-mainBoard.addNumber(1, 0, 2)
-mainBoard.addNumber(3, 0, 4)
-mainBoard.addNumber(2, 2, 2)
-mainBoard.addNumber(1, 2, 2)
-mainBoard.addNumber(0, 2, 2)
-mainBoard.addNumber(3, 2, 2)
+mainBoard.addNumber(0, 0, 1)
+mainBoard.addNumber(0, 2, 1)
 mainBoard.addNumber(3, 3, 2)
-mainBoard.addNumber(0, 3, 4)
-mainBoard.addNumber(1, 3, 4)
-mainBoard.addNumber(2, 3, 4)
-mainBoard.addNumber(2, 0, 8)
-mainBoard.addNumber(1, 1, 8)
 
-console.log(mainBoard.structure)
+window.addEventListener("keydown", (e) => {
+    switch (e.key) {
+        case 'ArrowUp':
+            mainBoard.swipeUp();
+            break;
+        case 'ArrowDown':
+            mainBoard.swipeDown();
+            break;
+        case 'ArrowLeft':
+            mainBoard.swipeLeft();
+            break;
+        case 'ArrowRight':
+            mainBoard.swipeRight();
+            break;
+    }
+})
 
 
 
