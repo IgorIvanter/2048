@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <div class="score-container">
+            <h1 class="game-title">
+                2048
+            </h1>
+            <h3 class="highscore-title">
+                Highscore:
+                <div id="highscore" style="display: inline"></div>
+            </h3>
+            <h3 class="score-title">
+                Score:
+                <div id="score"></div>
+            </h3>
+        </div>
+    </header>
 
     <main>
         <div class="table">
@@ -52,7 +67,7 @@
             </div>        
         </div>
         </div>
-        <button class="controls" onclick="mainBoard.swipeLeft()">
+        <!-- <button class="controls" onclick="mainBoard.swipeLeft()">
             Left
         </button>
         <button class="controls" onclick="mainBoard.swipeRight()">
@@ -63,7 +78,7 @@
         </button>
         <button class="controls" onclick="mainBoard.swipeDown()">
             Down
-        </button>
+        </button> -->
     </main>
     <script src="main.js"></script>
 </body>

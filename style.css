@@ -1,25 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Didact+Gothic&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap');
+
+/* Importing DM-Sans, Abril Fatface, Lato, Didact Gothic, Source Serif Pro from Google Fonts */
+
+:root {
+    --border-width: 0px;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Abril Fatface', sans-serif;
 }
 
 body {
-    display: flex;
+    background-color: darkslategrey;
 }
 
-.table {
-    border: 0px solid orange;
-    background-color: grey;;
-    border-radius: 10px;
+header {
+    font-size: 60px;
+    color: orange;
+    border: var(--border-width) solid black;
+}
+
+.score-container {
+    width: fit-content;
+    margin: auto;
+    border: var(--border-width) solid black;
+}
+
+
+.score-title, .highscore-title {
+    font-size: 25px;
+    font-weight: 100;
+}
+
+#score, #highscore {
+    display: inline;
+    color: grey;
 }
 
 main {
-    margin: 90px;
+    width: fit-content;
+    margin: auto;
+    border: var(--border-width) solid black;
+}
+
+.table {
+    background-color: grey;;
+    border-radius: 10px;
+    border: var(--border-width) solid black;
+}
+
+.text-center {
+    text-align: center;
 }
 
 .row {
     display: flex;
+    
 }
 
 .cell {

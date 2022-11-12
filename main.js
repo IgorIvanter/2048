@@ -145,6 +145,12 @@ class Board {
         this.cellLengthStr = `106`
         this.cellLength = 106
         this.origin = document.getElementById("origin")
+        this.scoreElement = document.getElementById("score")
+        this.highscoreElement = document.getElementById("highscore")
+        this.score = 0
+        this.highscore = 0
+        this.setScore(0)
+        this.updateHighscore()
         this.structure = [
             [undef, undef, undef, undef],
             [undef, undef, undef, undef],
@@ -152,6 +158,26 @@ class Board {
             [undef, undef, undef, undef]
         ]
     }
+
+    setScore = (value) => {
+        this.score = value
+        this.scoreElement.innerText = value.toString()
+        this.updateHighscore()
+        return value
+    }
+
+    increaseScore = (addedScore) => {
+        this.score += addedScore
+        this.scoreElement.innerText = this.score.toString()
+        this.updateHighscore()
+    } 
+
+    updateHighscore = () => {
+        this.highscore = Math.max(this.score, this.highscore)
+        this.highscoreElement.innerText = this.highscore.toString()
+
+    }
+
     addNumber = (initialX, initialY, value) => {
         this.structure[initialX][initialY] = new Number(initialX, initialY, value, this)
     }
@@ -179,8 +205,8 @@ class Board {
                     await current.move(columnToCompare, i)
                     mainNumberValue *= 2
                     current.setValue(mainNumberValue)
-                    console.log(this.structure[columnToCompare][i])
                     columnToCompare--
+                    this.increaseScore(mainNumberValue)
                 } else {
                     columnToCompare--
                     await current.move(columnToCompare, i)
@@ -211,8 +237,8 @@ class Board {
                     await current.move(columnToCompare, i)
                     mainNumberValue *= 2
                     current.setValue(mainNumberValue)
-                    console.log(this.structure[columnToCompare][i])
                     columnToCompare++
+                    this.increaseScore(mainNumberValue)
                 } else {
                     columnToCompare++
                     await current.move(columnToCompare, i)
@@ -244,6 +270,7 @@ class Board {
                     mainNumberValue *= 2
                     current.setValue(mainNumberValue)
                     rowToCompare++
+                    this.increaseScore(mainNumberValue)
                 } else {
                     rowToCompare++
                     await current.move(j, rowToCompare)
@@ -274,8 +301,8 @@ class Board {
                     await current.move(j, rowToCompare)
                     mainNumberValue *= 2
                     current.setValue(mainNumberValue)
-                    console.log(this.structure[j][rowToCompare])
                     rowToCompare--
+                    this.increaseScore(mainNumberValue)
                 } else {
                     rowToCompare--
                     await current.move(j, rowToCompare)
@@ -292,19 +319,7 @@ class Board {
             }
             return 1 + Math.round((max - 1) * Math.random())
         }
-        
-        function spawnRandomNumbers() {
-            for (let i = 0; i <= 3; ++i) {
-                for (let j = 0; j <= 3; ++j) {
-                    if (table[i][j].innerText === PLACEHOLDER) {
-                        table[i][j].innerText = getRandomNatural(2)
-                        return 0
-                    }
-                }
-            }
-            console.log("Game Over")
-            return 1
-        }
+
 
         const emptyNumbers = []
         for (let i = 0; i <= 3; i++) {
