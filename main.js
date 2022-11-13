@@ -1,6 +1,7 @@
 const origin = document.getElementById("origin")
 const body   = document.querySelector("body")
 const main   = document.querySelector("main")
+const gameOverBanner = document.getElementById("game-over-banner")
 
 const undef  = undefined     // TODO: think what to do with this thing
 
@@ -11,6 +12,7 @@ const cellLengthStr = `106`   // TODO: make this constant adapt to the particula
 const swipeSpeed = 300
 
 const COLORS = {
+    "-1" : "white",
     "1" : "lightgreen",
     "2" : "green",
     "4" : "brown",
@@ -27,7 +29,7 @@ const COLORS = {
 // The Number class represents numbers on the board
 
 class Number {
-    constructor(cellX, cellY, value, board = undefined) {
+    constructor(cellX, cellY, value, board) {
         this.board = board
         this.body = document.createElement("div")
         this.body.style.backgroundColor = this.backgroundColor = COLORS[value.toString()]
@@ -124,21 +126,26 @@ class Number {
 
 class EmptyNumber extends Number {
     constructor(cellX, cellY, board) {
-        this.board = board
-        this.body = document.createElement("div")
-        this.body.style.backgroundColor = this.backgroundColor = COLORS[value.toString()]
-        this.body.setAttribute("class", "number")
-        this.body.style.top = `${cellY * cellLengthStr}px`
-        this.body.style.left = `${cellX * cellLengthStr}px`
-        this.x = cellX
-        this.y = cellY
-        this.value = value
-        this.valueElement = document.createElement("h1")
-        this.valueElement.innerText = `${value}`
-        this.body.appendChild(this.valueElement)
-        origin.appendChild(this.body)
+        super(cellX, cellY, -1, board)
+       //  this.body.style.display = "none"
     }
-}
+    
+    animateAppearing = () => {
+        throw new TypeError("No .animateAppearing() method for an EmptyNumber")
+    }
+
+    setValue = () => {
+        throw new TypeError("No .setValue() method for an EmptyNumber")
+    }
+
+    move = () => {
+        throw new TypeError("No .move() method for an EmptyNumber")
+    }
+
+    delete = () => {
+        throw new TypeError("No .delete() method for an EmptyNumber")
+    }
+ }
 
 class Board {
     constructor() {
@@ -157,6 +164,8 @@ class Board {
             [undef, undef, undef, undef],
             [undef, undef, undef, undef]
         ]
+        this.gameOverFlag = false
+        window.addEventListener("keydown", this.arrowKeysHandler)
     }
 
     setScore = (value) => {
@@ -329,40 +338,129 @@ class Board {
                 }
             }
         }
-        if (emptyNumbers.length == 0) {
-            const gameOverHeading = document.createElement("h1")
-            gameOverHeading.innerText = "Game Over!"
-            main.appendChild(gameOverHeading)
-            // FIX: this is not a game over yet. Other moves can be done.
-            // here the game must reset
+        if (this.isGameOver()) {
+            this.openGameOverBanner()
+        } else if (this.isFull()) {
+            return
         } else {
             const newNumberCoordinates = emptyNumbers[getRandomNatural(emptyNumbers.length) - 1]
             this.addNumber(newNumberCoordinates[0], newNumberCoordinates[1], getRandomNatural(2))
         }
     }
-}
+
+    // .isFull() returns true iff every cell of the board is occupied with a Number
+
+    isFull = () => {
+        for (let i = 0; i <= 3; i++) {
+            for (let j = 0; j <= 3; j++) {
+                if (this.structure[i][j] === undef) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    // .isGameOver() returns true iff no more moves are possible
+
+    isGameOver = () => {
+        if (!this.isFull()) {
+            return false
+        }
+        for (let i = 0; i <= 3; i++) {
+            for (let j = 0; j <= 3; j++) {
+                const currentNumber = this.structure[i][j]
+                const adjacentPositions = [
+                    [i, j + 1],
+                    [i, j - 1],
+                    [i + 1, j],
+                    [i - 1, j],
+                ]
+                for (let adjacentPosition of adjacentPositions) {
+                    const adjacentX = adjacentPosition[0]
+                    const adjacentY = adjacentPosition[1]
+                    if (adjacentX > 3 || adjacentX < 0 || adjacentY > 3 || adjacentY < 0) {
+                        continue
+                    }
+                    const adjacentNumber = this.structure[adjacentX][adjacentY]
+                    if (adjacentNumber != undef && adjacentNumber.value === currentNumber.value) {
+                        return false
+                    }
+                }
+            }
+        }
+        this.gameOverFlag = true
+        return true
+    }
+
+    openGameOverBanner = () => {
+        gameOverBanner.classList.add("active")
+    }
+
+    closeGameOverBanner = () => {
+        gameOverBanner.classList.remove("active")
+    }
+
+    arrowKeysHandler = ((e) => {
+        if (this.gameOverFlag) {
+            return
+        }
+        switch (e.key) {
+            case 'ArrowUp':
+                this.swipeUp();
+                break;
+            case 'ArrowDown':
+                this.swipeDown();
+                break;
+            case 'ArrowLeft':
+                this.swipeLeft();
+                break;
+            case 'ArrowRight':
+                this.swipeRight();
+                break;
+            case '1':
+                this.openGameOverBanner()
+        }
+    })
+
+    reset = () => {
+        for (let i = 0; i <= 3; i++) {
+            for (let j = 0; j <= 3; j++) {
+                if (this.structure[i][j])
+                    this.structure[i][j].delete()
+                }
+            }
+        this.setScore(0)
+        this.gameOverFlag = false
+        this.closeGameOverBanner()
+
+        // here actually some random setup should appear, but I just coded it for now
+
+        mainBoard.addNumber(0, 0, 1)
+        mainBoard.addNumber(0, 1, 4)
+        mainBoard.addNumber(0, 2, 2)
+    }
+ }
 
 // experimental initial setup of the board
 
 const mainBoard = new Board
 
 mainBoard.addNumber(0, 0, 1)
-mainBoard.addNumber(0, 2, 1)
-mainBoard.addNumber(3, 3, 2)
+mainBoard.addNumber(0, 1, 4)
+mainBoard.addNumber(0, 2, 2)
 
-window.addEventListener("keydown", (e) => {
-    switch (e.key) {
-        case 'ArrowUp':
-            mainBoard.swipeUp();
-            break;
-        case 'ArrowDown':
-            mainBoard.swipeDown();
-            break;
-        case 'ArrowLeft':
-            mainBoard.swipeLeft();
-            break;
-        case 'ArrowRight':
-            mainBoard.swipeRight();
-            break;
-    }
-})
+
+// mainBoard.addNumber(0, 3, 4)
+// mainBoard.addNumber(1, 0, 2)
+// mainBoard.addNumber(1, 1, 8)
+// mainBoard.addNumber(1, 2, 4)
+// mainBoard.addNumber(1, 3, 16)
+// mainBoard.addNumber(2, 0, 8)
+// mainBoard.addNumber(2, 1, 1)
+// mainBoard.addNumber(2, 2, 32)
+// mainBoard.addNumber(2, 3, 4)
+// mainBoard.addNumber(3, 0, 2)
+// mainBoard.addNumber(3, 1, 16)
+// mainBoard.addNumber(3, 2, 8)
+// mainBoard.addNumber(3, 3, 0)
