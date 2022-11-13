@@ -43,13 +43,54 @@ header {
 main {
     width: fit-content;
     margin: auto;
+    margin-top: 50px;
     border: var(--border-width) solid black;
 }
+
+.game-over-banner {
+    border: var(--border-width) solid black;
+    border-radius: 10px;
+    width: 432px;
+    height: 432px;
+    font-size: 40px;
+    position: absolute;
+    z-index: 10;
+    background: beige;
+    top: -100vh;
+    transition: 1s;
+    text-align: center;
+}
+
+.game-over-banner.active {
+    top: 0;
+}
+
+.game-over-banner > h1 {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.game-over-banner > button {
+    width: 75%;
+    margin: auto;
+    font-size: 40px;
+    border: none;
+    border-radius: 10px;
+    background-color: orange;
+    transition: 0.2s;
+}
+
+.game-over-banner > button:hover {
+    opacity: 0.7;
+}
+
+
 
 .table {
     background-color: grey;;
     border-radius: 10px;
     border: var(--border-width) solid black;
+    position: relative;
 }
 
 .text-center {
