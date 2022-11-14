@@ -1,29 +1,8 @@
-const origin = document.getElementById("origin")
-const body   = document.querySelector("body")
-const main   = document.querySelector("main")
 const gameOverBanner = document.getElementById("game-over-banner")
 
-const undef  = undefined     // TODO: think what to do with this thing
-
-                            // maybe define some empty number...
-
-const cellLengthStr = `106`   // TODO: make this constant adapt to the particular board dimensions
+const cellLength = 106   // TODO: make this constant adapt to the particular board dimensions
 
 const swipeSpeed = 150
-
-const COLORS1 = {
-    "-1" : "white",
-    "1" : "#FFE503",
-    "2" : "#FFBB00",
-    "4" : "#af9951",
-    "8" : "#B22222",
-    "16": "#910000",
-    "32": "#611C07",
-    "64": "#F8F658",
-    "128": "grey",
-    "256": "black",
-    "512": "white"
-}
 
 const COLORS = {
     "1" : "lightgreen",
@@ -52,8 +31,8 @@ class Number {
         this.body = document.createElement("div")
         this.body.style.backgroundColor = this.backgroundColor = COLORS[value.toString()]
         this.body.setAttribute("class", "number")
-        this.body.style.top = `${cellY * cellLengthStr}px`
-        this.body.style.left = `${cellX * cellLengthStr}px`
+        this.body.style.top = `${cellY * cellLength}px`
+        this.body.style.left = `${cellX * cellLength}px`
         this.body.style.opacity = "0"
         this.x = cellX
         this.y = cellY
@@ -61,7 +40,7 @@ class Number {
         this.valueElement = document.createElement("h1")
         this.valueElement.innerText = `${value}`
         this.body.appendChild(this.valueElement)
-        origin.appendChild(this.body)
+        this.board.origin.appendChild(this.body)
         this.animateAppearing()
     }
 
@@ -108,8 +87,8 @@ class Number {
                 left: this.body.style.left
             },
             {
-                top: `${destinationY * cellLengthStr}px`,
-                left: `${destinationX * cellLengthStr}px`
+                top: `${destinationY * cellLength}px`,
+                left: `${destinationX * cellLength}px`
             }
         ]
         
@@ -124,50 +103,24 @@ class Number {
             previous.delete()
         }
 
-        this.body.style.top = `${destinationY * cellLengthStr}px`
-        this.body.style.left = `${destinationX * cellLengthStr}px`
-        this.board.structure[current.x][current.y] = undef
+        this.body.style.top = `${destinationY * cellLength}px`
+        this.body.style.left = `${destinationX * cellLength}px`
+        this.board.structure[current.x][current.y] = undefined
         this.board.structure[destinationX][destinationY] = current
         this.x = destinationX
         this.y = destinationY
     }
 
     delete = () => {
-        this.board.structure[this.x][this.y] = undef
+        this.board.structure[this.x][this.y] = undefined
         this.valueElement.parentElement.removeChild(this.valueElement)
-        origin.removeChild(this.body)
+        this.board.origin.removeChild(this.body)
         
     }
 }
 
-// TODO: replace undef with an emptyNumber everywhere
-
-class EmptyNumber extends Number {
-    constructor(cellX, cellY, board) {
-        super(cellX, cellY, -1, board)
-       //  this.body.style.display = "none"
-    }
-    
-    animateAppearing = () => {
-        throw new TypeError("No .animateAppearing() method for an EmptyNumber")
-    }
-
-    setValue = () => {
-        throw new TypeError("No .setValue() method for an EmptyNumber")
-    }
-
-    move = () => {
-        throw new TypeError("No .move() method for an EmptyNumber")
-    }
-
-    delete = () => {
-        throw new TypeError("No .delete() method for an EmptyNumber")
-    }
- }
-
 class Board {
     constructor() {
-        this.cellLengthStr = `106`
         this.cellLength = 106
         this.origin = document.getElementById("origin")
         this.scoreElement = document.getElementById("score")
@@ -177,13 +130,23 @@ class Board {
         this.setScore(0)
         this.updateHighscore()
         this.structure = [
-            [undef, undef, undef, undef],
-            [undef, undef, undef, undef],
-            [undef, undef, undef, undef],
-            [undef, undef, undef, undef]
+            [undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined]
         ]
         this.gameOverFlag = false
+
+        // Initial setup:
+        
+        this.addNumber(0, 0, 1)
+        this.addNumber(0, 3, 4)
+        this.addNumber(3, 1, 2)
+
+        // Adding the arrow keys handler for controls
+
         window.addEventListener("keydown", this.arrowKeysHandler)
+
     }
 
     setScore = (value) => {
@@ -209,8 +172,6 @@ class Board {
         this.structure[initialX][initialY] = new Number(initialX, initialY, value, this)
     }
 
-    // It would be nice to unify these 4 very similar functions into one
-
     swipeRight = async () => {
         for (let i = 0; i <= 3; ++i) {
             let columnToCompare = 3;
@@ -218,9 +179,9 @@ class Board {
                 let current = this.structure[j][i]
                 let main    = this.structure[columnToCompare][i]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
+                } else if (main === undefined) {
                     await current.move(columnToCompare, i)
                     continue
                 }
@@ -250,9 +211,9 @@ class Board {
                 let current = this.structure[j][i]
                 let main    = this.structure[columnToCompare][i]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
+                } else if (main === undefined) {
                     await current.move(columnToCompare, i)
                     continue
                 }
@@ -282,9 +243,9 @@ class Board {
                 let current = this.structure[j][i]
                 let main    = this.structure[j][rowToCompare]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
+                } else if (main === undefined) {
                     await current.move(j, rowToCompare)
                     continue
                 }
@@ -314,9 +275,9 @@ class Board {
                 let current = this.structure[j][i]
                 let main    = this.structure[j][rowToCompare]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
+                } else if (main === undefined) {
                     await current.move(j, rowToCompare)
                     continue
                 }
@@ -371,7 +332,7 @@ class Board {
     isFull = () => {
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
-                if (this.structure[i][j] === undef) {
+                if (this.structure[i][j] === undefined) {
                     return false
                 }
             }
@@ -401,7 +362,7 @@ class Board {
                         continue
                     }
                     const adjacentNumber = this.structure[adjacentX][adjacentY]
-                    if (adjacentNumber != undef && adjacentNumber.value === currentNumber.value) {
+                    if (adjacentNumber != undefined && adjacentNumber.value === currentNumber.value) {
                         return false
                     }
                 }
@@ -460,77 +421,5 @@ class Board {
     }
  }
 
-// experimental initial setup of the board
-
 const mainBoard = new Board
-
-mainBoard.addNumber(0, 0, 1)
-mainBoard.addNumber(0, 1, 4)
-mainBoard.addNumber(0, 2, 2)
-
-
-
-// document.addEventListener('touchstart', handleTouchStart, false);        
-// document.addEventListener('touchmove', handleTouchMove, false);
-
-// var xDown = null;                                                        
-// var yDown = null;
-
-// function getTouches(evt) {
-//   return evt.touches ||             // browser API
-//          evt.originalEvent.touches; // jQuery
-// }                                                     
-                                                                         
-// function handleTouchStart(evt) {
-//     evt.preventDefault()
-//     const firstTouch = getTouches(evt)[0];                                      
-//     xDown = firstTouch.clientX;                                      
-//     yDown = firstTouch.clientY;                                      
-// };                                                
-                                                                         
-// function handleTouchMove(evt) {
-//     evt.preventDefault()
-//     if ( ! xDown || ! yDown ) {
-//         return;
-//     }
-
-//     var xUp = evt.touches[0].clientX;                                    
-//     var yUp = evt.touches[0].clientY;
-
-//     var xDiff = xDown - xUp;
-//     var yDiff = yDown - yUp;
-                                                                         
-//     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
-//         if ( xDiff > 0 ) {
-//             mainBoard.swipeLeft()
-//         } else {
-//             mainBoard.swipeRight()
-//         }                       
-//     } else {
-//         if ( yDiff > 0 ) {
-//             mainBoard.swipeUp()
-//         } else { 
-//             mainBoard.swipeDown()
-//         }                                                                 
-//     }
-//     /* reset values */
-//     xDown = null;
-//     yDown = null;                                             
-// };
-
-
-
-// mainBoard.addNumber(0, 3, 4)
-// mainBoard.addNumber(1, 0, 2)
-// mainBoard.addNumber(1, 1, 8)
-// mainBoard.addNumber(1, 2, 32)
-// mainBoard.addNumber(1, 3, 16)
-// mainBoard.addNumber(2, 0, 64)
-// mainBoard.addNumber(2, 1, 4096)
-// mainBoard.addNumber(2, 2, 2048)
-// mainBoard.addNumber(2, 3, 1024)
-// mainBoard.addNumber(3, 0, 512)
-// mainBoard.addNumber(3, 1, 256)
-// mainBoard.addNumber(3, 3, 128)
-// mainBoard.addNumber(3, 2, 8192)
    
