@@ -9,20 +9,38 @@ const undef  = undefined     // TODO: think what to do with this thing
 
 const cellLengthStr = `106`   // TODO: make this constant adapt to the particular board dimensions
 
-const swipeSpeed = 300
+const swipeSpeed = 150
+
+const COLORS1 = {
+    "-1" : "white",
+    "1" : "#FFE503",
+    "2" : "#FFBB00",
+    "4" : "#af9951",
+    "8" : "#B22222",
+    "16": "#910000",
+    "32": "#611C07",
+    "64": "#F8F658",
+    "128": "grey",
+    "256": "black",
+    "512": "white"
+}
 
 const COLORS = {
-    "-1" : "white",
     "1" : "lightgreen",
     "2" : "green",
-    "4" : "brown",
-    "8" : "darkred",
-    "16": "red",
-    "32": "cyan",
-    "64": "aquamarine",
-    "128": "blue",
-    "256": "violet"
-}       
+    "4" : "#61c900",
+    "8" : "#F8F658",
+    "16": "#FFBB00",
+    "32": "#ED8111",
+    "64": "#611C07",
+    "128": "#510000",
+    "256": "#810000",
+    "512": "#f13200",
+    "1024" : "#ff0000",
+    "2048" : "#ff0044",
+    "4096" : "#ff009f",
+    "8192" : "#ff40ff"
+}
 
 // The object COLORS defines the color of a number depending on it's value
 
@@ -418,8 +436,8 @@ class Board {
             case 'ArrowRight':
                 this.swipeRight();
                 break;
-            case '1':
-                this.openGameOverBanner()
+            default:
+                break
         }
     })
 
@@ -451,16 +469,68 @@ mainBoard.addNumber(0, 1, 4)
 mainBoard.addNumber(0, 2, 2)
 
 
+
+// document.addEventListener('touchstart', handleTouchStart, false);        
+// document.addEventListener('touchmove', handleTouchMove, false);
+
+// var xDown = null;                                                        
+// var yDown = null;
+
+// function getTouches(evt) {
+//   return evt.touches ||             // browser API
+//          evt.originalEvent.touches; // jQuery
+// }                                                     
+                                                                         
+// function handleTouchStart(evt) {
+//     evt.preventDefault()
+//     const firstTouch = getTouches(evt)[0];                                      
+//     xDown = firstTouch.clientX;                                      
+//     yDown = firstTouch.clientY;                                      
+// };                                                
+                                                                         
+// function handleTouchMove(evt) {
+//     evt.preventDefault()
+//     if ( ! xDown || ! yDown ) {
+//         return;
+//     }
+
+//     var xUp = evt.touches[0].clientX;                                    
+//     var yUp = evt.touches[0].clientY;
+
+//     var xDiff = xDown - xUp;
+//     var yDiff = yDown - yUp;
+                                                                         
+//     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
+//         if ( xDiff > 0 ) {
+//             mainBoard.swipeLeft()
+//         } else {
+//             mainBoard.swipeRight()
+//         }                       
+//     } else {
+//         if ( yDiff > 0 ) {
+//             mainBoard.swipeUp()
+//         } else { 
+//             mainBoard.swipeDown()
+//         }                                                                 
+//     }
+//     /* reset values */
+//     xDown = null;
+//     yDown = null;                                             
+// };
+
+
+
 // mainBoard.addNumber(0, 3, 4)
 // mainBoard.addNumber(1, 0, 2)
 // mainBoard.addNumber(1, 1, 8)
-// mainBoard.addNumber(1, 2, 4)
+// mainBoard.addNumber(1, 2, 32)
 // mainBoard.addNumber(1, 3, 16)
-// mainBoard.addNumber(2, 0, 8)
-// mainBoard.addNumber(2, 1, 1)
-// mainBoard.addNumber(2, 2, 32)
-// mainBoard.addNumber(2, 3, 4)
-// mainBoard.addNumber(3, 0, 2)
-// mainBoard.addNumber(3, 1, 16)
-// mainBoard.addNumber(3, 2, 8)
-// mainBoard.addNumber(3, 3, 0)
+// mainBoard.addNumber(2, 0, 64)
+// mainBoard.addNumber(2, 1, 4096)
+// mainBoard.addNumber(2, 2, 2048)
+// mainBoard.addNumber(2, 3, 1024)
+// mainBoard.addNumber(3, 0, 512)
+// mainBoard.addNumber(3, 1, 256)
+// mainBoard.addNumber(3, 3, 128)
+// mainBoard.addNumber(3, 2, 8192)
+   
