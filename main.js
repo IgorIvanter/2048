@@ -4,7 +4,7 @@ class NumberSquare {
     constructor(cellX, cellY, value, board) {
         this.board = board
         this.squareElement = document.createElement("div")
-        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorsByValue[value.toString()]
+        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorByValue[value.toString()]
         this.squareElement.setAttribute("class", "number")
         this.squareElement.style.top = `${cellY * this.board.cellLength}px`
         this.squareElement.style.left = `${cellX * this.board.cellLength}px`
@@ -20,9 +20,11 @@ class NumberSquare {
     }
 
     animateAppearing = async () => {
+
         const translationTiming = {
             duration: this.board.swipeTimeMS, iterations: 1
         }
+
         const translationKeyFrames = [
             {
                 opacity: "0"
@@ -40,7 +42,7 @@ class NumberSquare {
     setValueTo = (newValue) => {
         this.valueElement.innerText = newValue.toString()
         this.value = newValue
-        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorsByValue[this.value.toString()]
+        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorByValue[this.value.toString()]
     }
 
     moveTo = async (destinationX, destinationY) => {
@@ -68,16 +70,9 @@ class NumberSquare {
         ]
         
         await this.squareElement.animate(translationKeyFrames, translationTiming)
-
-        /* TODO: Now this isn't good: as soon as one number starts moving, the previous one
-        is already disappeared. I can do the following: let the moving one just sit on 
-        top of the previous one, and save the reminder that I have to delete the number 
-        underneath by the next moveTo. */
-
         if (previousSquare) {
             previousSquare.delete()
         }
-
         this.squareElement.style.top = `${destinationY * this.board.cellLength}px`
         this.squareElement.style.left = `${destinationX * this.board.cellLength}px`
         this.board.currentStateTable[newSquare.x][newSquare.y] = undefined
@@ -103,8 +98,9 @@ class Board {
         this.swipeTimeMS = swipeTimeMS
         this.score = 0
         this.highscore = 0
-        this.setScore(0)
+        this.setScoreTo(0)
         this.updateHighscore()
+
         this.currentStateTable = [
             [undefined, undefined, undefined, undefined],
             [undefined, undefined, undefined, undefined],
@@ -112,21 +108,21 @@ class Board {
             [undefined, undefined, undefined, undefined]
         ]
 
-        this.SquareColorsByValue = {
-            "1" : "lightgreen",
-            "2" : "green",
-            "4" : "#61c900",
-            "8" : "#F8F658",
-            "16": "#FFBB00",
-            "32": "#ED8111",
-            "64": "#611C07",
-            "128": "#510000",
-            "256": "#810000",
-            "512": "#f13200",
-            "1024" : "#ff0000",
-            "2048" : "#ff0044",
-            "4096" : "#ff009f",
-            "8192" : "#ff40ff"
+        this.SquareColorByValue = {
+            "1"     : "lightgreen",
+            "2"     : "green",
+            "4"     : "#61c900",
+            "8"     : "#F8F658",
+            "16"    : "#FFBB00",
+            "32"    : "#ED8111",
+            "64"    : "#611C07",
+            "128"   : "#510000",
+            "256"   : "#810000",
+            "512"   : "#f13200",
+            "1024"  : "#ff0000",
+            "2048"  : "#ff0044",
+            "4096"  : "#ff009f",
+            "8192"  : "#ff40ff"
         }
 
         this.gameOverBanner = document.getElementById("game-over-banner")
@@ -143,7 +139,7 @@ class Board {
         window.addEventListener("keydown", this.arrowKeysHandler)
     }
 
-    setScore = (value) => {
+    setScoreTo = (value) => {
         this.score = value
         this.scoreElement.innerText = value.toString()
         this.updateHighscore()
@@ -196,7 +192,7 @@ class Board {
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
     swipeLeft = async () => {
@@ -228,7 +224,7 @@ class Board {
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
     swipeUp = async () => {
@@ -260,7 +256,7 @@ class Board {
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
     swipeDown = async () => {
@@ -292,10 +288,10 @@ class Board {
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
-    spawnRandomNumber = () => {
+    spawnRandomNumberSquare = () => {
         function getRandomNatural(max) {
             if (max < 1) {
                 throw new RangeError("getRandomNatural takes a number > 1 as argument")
@@ -343,7 +339,7 @@ class Board {
         }
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
-                const currentNumber = this.currentStateTable[i][j]
+                const currentSquare = this.currentStateTable[i][j]
                 const adjacentPositions = [
                     [i, j + 1],
                     [i, j - 1],
@@ -356,8 +352,8 @@ class Board {
                     if (adjacentX > 3 || adjacentX < 0 || adjacentY > 3 || adjacentY < 0) {
                         continue
                     }
-                    const adjacentNumber = this.currentStateTable[adjacentX][adjacentY]
-                    if (adjacentNumber != undefined && adjacentNumber.value === currentNumber.value) {
+                    const adjacentSquare = this.currentStateTable[adjacentX][adjacentY]
+                    if (adjacentSquare != undefined && adjacentSquare.value === currentSquare.value) {
                         return false
                     }
                 }
@@ -404,7 +400,7 @@ class Board {
                     this.currentStateTable[i][j].delete()
                 }
             }
-        this.setScore(0)
+        this.setScoreTo(0)
         this.gameOverFlag = false
         this.closeGameOverBanner()
 
@@ -417,4 +413,3 @@ class Board {
  }
 
 const mainBoard = new Board
-   
