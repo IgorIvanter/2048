@@ -418,8 +418,8 @@ class Board {
             case 'ArrowRight':
                 this.swipeRight();
                 break;
-            case '1':
-                this.openGameOverBanner()
+            default:
+                break
         }
     })
 
