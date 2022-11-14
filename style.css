@@ -14,7 +14,7 @@
 }
 
 body {
-    background-color: darkslategrey;
+    background-color: #2f4f4f;
 }
 
 header {
@@ -43,7 +43,7 @@ header {
 main {
     width: fit-content;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 30px;
     border: var(--border-width) solid black;
 }
 
@@ -56,7 +56,7 @@ main {
     position: absolute;
     z-index: 10;
     background: beige;
-    top: -100vh;
+    top: -200vh;
     transition: 1s;
     text-align: center;
 }
@@ -143,4 +143,34 @@ main {
 
 .number > .value {
     font-size: 40px;
+}
+
+.btn-container {
+    display: none;
+}
+
+@media (max-width: 990px) {
+    .btn-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+        margin-bottom: auto;
+        border: var(--border-width) solid black;
+    }
+
+    .btn-container > button {
+        background-color: orange;
+        border: none;
+        width: 100px;
+        height: 50px;
+        border-radius: 10px;
+        font-size: 28px;
+        transition: 0.2s;
+        font-weight: bold;
+    }
+
+    .btn-container > button:active {
+        opacity: 0.4;
+        background-color: orangered;
+    }
 }
