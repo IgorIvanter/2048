@@ -1,38 +1,13 @@
-const gameOverBanner = document.getElementById("game-over-banner")
-
-const cellLength = 106   // TODO: make this constant adapt to the particular board dimensions
-
-const swipeSpeed = 150
-
-const COLORS = {
-    "1" : "lightgreen",
-    "2" : "green",
-    "4" : "#61c900",
-    "8" : "#F8F658",
-    "16": "#FFBB00",
-    "32": "#ED8111",
-    "64": "#611C07",
-    "128": "#510000",
-    "256": "#810000",
-    "512": "#f13200",
-    "1024" : "#ff0000",
-    "2048" : "#ff0044",
-    "4096" : "#ff009f",
-    "8192" : "#ff40ff"
-}
-
-// The object COLORS defines the color of a number depending on it's value
-
 // The NumberSquare class represents numbers on the board
 
 class NumberSquare {
     constructor(cellX, cellY, value, board) {
         this.board = board
         this.squareElement = document.createElement("div")
-        this.squareElement.style.backgroundColor = this.backgroundColor = COLORS[value.toString()]
+        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorsByValue[value.toString()]
         this.squareElement.setAttribute("class", "number")
-        this.squareElement.style.top = `${cellY * cellLength}px`
-        this.squareElement.style.left = `${cellX * cellLength}px`
+        this.squareElement.style.top = `${cellY * this.board.cellLength}px`
+        this.squareElement.style.left = `${cellX * this.board.cellLength}px`
         this.squareElement.style.opacity = "0"
         this.x = cellX
         this.y = cellY
@@ -46,7 +21,7 @@ class NumberSquare {
 
     animateAppearing = async () => {
         const translationTiming = {
-            duration: swipeSpeed, iterations: 1
+            duration: this.board.swipeTimeMS, iterations: 1
         }
         const translationKeyFrames = [
             {
@@ -65,7 +40,7 @@ class NumberSquare {
     setValueTo = (newValue) => {
         this.valueElement.innerText = newValue.toString()
         this.value = newValue
-        this.squareElement.style.backgroundColor = this.backgroundColor = COLORS[this.value.toString()]
+        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorsByValue[this.value.toString()]
     }
 
     moveTo = async (destinationX, destinationY) => {
@@ -79,7 +54,7 @@ class NumberSquare {
         }
 
         const translationTiming = {
-            duration: swipeSpeed, iterations: 1
+            duration: this.board.swipeTimeMS, iterations: 1
         }
         const translationKeyFrames = [
             {
@@ -103,8 +78,8 @@ class NumberSquare {
             previousSquare.delete()
         }
 
-        this.squareElement.style.top = `${destinationY * cellLength}px`
-        this.squareElement.style.left = `${destinationX * cellLength}px`
+        this.squareElement.style.top = `${destinationY * this.board.cellLength}px`
+        this.squareElement.style.left = `${destinationX * this.board.cellLength}px`
         this.board.currentStateTable[newSquare.x][newSquare.y] = undefined
         this.board.currentStateTable[destinationX][destinationY] = newSquare
         this.x = destinationX
@@ -120,11 +95,12 @@ class NumberSquare {
 }
 
 class Board {
-    constructor() {
+    constructor(swipeTimeMS = 150) {
         this.cellLength = 106
         this.origin = document.getElementById("origin")
         this.scoreElement = document.getElementById("score")
         this.highscoreElement = document.getElementById("highscore")
+        this.swipeTimeMS = swipeTimeMS
         this.score = 0
         this.highscore = 0
         this.setScore(0)
@@ -135,6 +111,25 @@ class Board {
             [undefined, undefined, undefined, undefined],
             [undefined, undefined, undefined, undefined]
         ]
+
+        this.SquareColorsByValue = {
+            "1" : "lightgreen",
+            "2" : "green",
+            "4" : "#61c900",
+            "8" : "#F8F658",
+            "16": "#FFBB00",
+            "32": "#ED8111",
+            "64": "#611C07",
+            "128": "#510000",
+            "256": "#810000",
+            "512": "#f13200",
+            "1024" : "#ff0000",
+            "2048" : "#ff0044",
+            "4096" : "#ff009f",
+            "8192" : "#ff40ff"
+        }
+
+        this.gameOverBanner = document.getElementById("game-over-banner")
         this.gameOverFlag = false
 
         // Initial setup:
@@ -146,7 +141,6 @@ class Board {
         // Adding the arrow keys handler for controls
 
         window.addEventListener("keydown", this.arrowKeysHandler)
-
     }
 
     setScore = (value) => {
@@ -374,11 +368,11 @@ class Board {
     }
 
     openGameOverBanner = () => {
-        gameOverBanner.classList.add("active")
+        this.gameOverBanner.classList.add("active")
     }
 
     closeGameOverBanner = () => {
-        gameOverBanner.classList.remove("active")
+        this.gameOverBanner.classList.remove("active")
     }
 
     arrowKeysHandler = ((e) => {
