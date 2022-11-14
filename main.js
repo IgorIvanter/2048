@@ -1,74 +1,30 @@
-const origin = document.getElementById("origin")
-const body   = document.querySelector("body")
-const main   = document.querySelector("main")
-const gameOverBanner = document.getElementById("game-over-banner")
+// The NumberSquare class represents numbers on the board
 
-const undef  = undefined     // TODO: think what to do with this thing
-
-                            // maybe define some empty number...
-
-const cellLengthStr = `106`   // TODO: make this constant adapt to the particular board dimensions
-
-const swipeSpeed = 150
-
-const COLORS1 = {
-    "-1" : "white",
-    "1" : "#FFE503",
-    "2" : "#FFBB00",
-    "4" : "#af9951",
-    "8" : "#B22222",
-    "16": "#910000",
-    "32": "#611C07",
-    "64": "#F8F658",
-    "128": "grey",
-    "256": "black",
-    "512": "white"
-}
-
-const COLORS = {
-    "1" : "lightgreen",
-    "2" : "green",
-    "4" : "#61c900",
-    "8" : "#F8F658",
-    "16": "#FFBB00",
-    "32": "#ED8111",
-    "64": "#611C07",
-    "128": "#510000",
-    "256": "#810000",
-    "512": "#f13200",
-    "1024" : "#ff0000",
-    "2048" : "#ff0044",
-    "4096" : "#ff009f",
-    "8192" : "#ff40ff"
-}
-
-// The object COLORS defines the color of a number depending on it's value
-
-// The Number class represents numbers on the board
-
-class Number {
+class NumberSquare {
     constructor(cellX, cellY, value, board) {
         this.board = board
-        this.body = document.createElement("div")
-        this.body.style.backgroundColor = this.backgroundColor = COLORS[value.toString()]
-        this.body.setAttribute("class", "number")
-        this.body.style.top = `${cellY * cellLengthStr}px`
-        this.body.style.left = `${cellX * cellLengthStr}px`
-        this.body.style.opacity = "0"
+        this.squareElement = document.createElement("div")
+        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorByValue[value.toString()]
+        this.squareElement.setAttribute("class", "number")
+        this.squareElement.style.top = `${cellY * this.board.cellLength}px`
+        this.squareElement.style.left = `${cellX * this.board.cellLength}px`
+        this.squareElement.style.opacity = "0"
         this.x = cellX
         this.y = cellY
         this.value = value
         this.valueElement = document.createElement("h1")
         this.valueElement.innerText = `${value}`
-        this.body.appendChild(this.valueElement)
-        origin.appendChild(this.body)
+        this.squareElement.appendChild(this.valueElement)
+        this.board.origin.appendChild(this.squareElement)
         this.animateAppearing()
     }
 
     animateAppearing = async () => {
+
         const translationTiming = {
-            duration: swipeSpeed, iterations: 1
+            duration: this.board.swipeTimeMS, iterations: 1
         }
+
         const translationKeyFrames = [
             {
                 opacity: "0"
@@ -78,115 +34,112 @@ class Number {
             }
         ]
 
-        await this.body.animate(translationKeyFrames, translationTiming)
+        await this.squareElement.animate(translationKeyFrames, translationTiming)
 
-        this.body.style.opacity = "1"
+        this.squareElement.style.opacity = "1"
     }
 
-    setValue = (newValue) => {
+    setValueTo = (newValue) => {
         this.valueElement.innerText = newValue.toString()
         this.value = newValue
-        this.body.style.backgroundColor = this.backgroundColor = COLORS[this.value.toString()]
+        this.squareElement.style.backgroundColor = this.backgroundColor = this.board.SquareColorByValue[this.value.toString()]
     }
 
-    move = async (destinationX, destinationY) => {
-        const previous = this.board.structure[destinationX][destinationY]
-        const current = this
+    moveTo = async (destinationX, destinationY) => {
+        const previousSquare = this.board.currentStateTable[destinationX][destinationY]
+        const newSquare = this
 
         // now check if the number just stays on it's own cell:
 
-        if (current.x === destinationX && current.y === destinationY) {
+        if (newSquare.x === destinationX && newSquare.y === destinationY) {
             return
         }
 
         const translationTiming = {
-            duration: swipeSpeed, iterations: 1
+            duration: this.board.swipeTimeMS, iterations: 1
         }
         const translationKeyFrames = [
             {
-                top: this.body.style.top,
-                left: this.body.style.left
+                top: this.squareElement.style.top,
+                left: this.squareElement.style.left
             },
             {
-                top: `${destinationY * cellLengthStr}px`,
-                left: `${destinationX * cellLengthStr}px`
+                top: `${destinationY * this.board.cellLength}px`,
+                left: `${destinationX * this.board.cellLength}px`
             }
         ]
         
-        await this.body.animate(translationKeyFrames, translationTiming)
-
-        /* TODO: Now this isn't good: as soon as one number starts moving, the previous one
-        is already disappeared. I can do the following: let the moving one just sit on 
-        top of the previous one, and save the reminder that I have to delete the number 
-        underneath by the next move. */
-
-        if (previous) {
-            previous.delete()
+        await this.squareElement.animate(translationKeyFrames, translationTiming)
+        if (previousSquare) {
+            previousSquare.delete()
         }
-
-        this.body.style.top = `${destinationY * cellLengthStr}px`
-        this.body.style.left = `${destinationX * cellLengthStr}px`
-        this.board.structure[current.x][current.y] = undef
-        this.board.structure[destinationX][destinationY] = current
+        this.squareElement.style.top = `${destinationY * this.board.cellLength}px`
+        this.squareElement.style.left = `${destinationX * this.board.cellLength}px`
+        this.board.currentStateTable[newSquare.x][newSquare.y] = undefined
+        this.board.currentStateTable[destinationX][destinationY] = newSquare
         this.x = destinationX
         this.y = destinationY
     }
 
     delete = () => {
-        this.board.structure[this.x][this.y] = undef
+        this.board.currentStateTable[this.x][this.y] = undefined
         this.valueElement.parentElement.removeChild(this.valueElement)
-        origin.removeChild(this.body)
+        this.board.origin.removeChild(this.squareElement)
         
     }
 }
 
-// TODO: replace undef with an emptyNumber everywhere
-
-class EmptyNumber extends Number {
-    constructor(cellX, cellY, board) {
-        super(cellX, cellY, -1, board)
-       //  this.body.style.display = "none"
-    }
-    
-    animateAppearing = () => {
-        throw new TypeError("No .animateAppearing() method for an EmptyNumber")
-    }
-
-    setValue = () => {
-        throw new TypeError("No .setValue() method for an EmptyNumber")
-    }
-
-    move = () => {
-        throw new TypeError("No .move() method for an EmptyNumber")
-    }
-
-    delete = () => {
-        throw new TypeError("No .delete() method for an EmptyNumber")
-    }
- }
-
 class Board {
-    constructor() {
-        this.cellLengthStr = `106`
+    constructor(swipeTimeMS = 150) {
         this.cellLength = 106
         this.origin = document.getElementById("origin")
         this.scoreElement = document.getElementById("score")
         this.highscoreElement = document.getElementById("highscore")
+        this.swipeTimeMS = swipeTimeMS
         this.score = 0
         this.highscore = 0
-        this.setScore(0)
+        this.setScoreTo(0)
         this.updateHighscore()
-        this.structure = [
-            [undef, undef, undef, undef],
-            [undef, undef, undef, undef],
-            [undef, undef, undef, undef],
-            [undef, undef, undef, undef]
+
+        this.currentStateTable = [
+            [undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined]
         ]
+
+        this.SquareColorByValue = {
+            "1"     : "lightgreen",
+            "2"     : "green",
+            "4"     : "#61c900",
+            "8"     : "#F8F658",
+            "16"    : "#FFBB00",
+            "32"    : "#ED8111",
+            "64"    : "#611C07",
+            "128"   : "#510000",
+            "256"   : "#810000",
+            "512"   : "#f13200",
+            "1024"  : "#ff0000",
+            "2048"  : "#ff0044",
+            "4096"  : "#ff009f",
+            "8192"  : "#ff40ff"
+        }
+
+        this.gameOverBanner = document.getElementById("game-over-banner")
         this.gameOverFlag = false
+
+        // Initial setup:
+        
+        this.addNumberSquare(0, 0, 1)
+        this.addNumberSquare(0, 3, 4)
+        this.addNumberSquare(3, 1, 2)
+
+        // Adding the arrow keys handler for controls
+
         window.addEventListener("keydown", this.arrowKeysHandler)
     }
 
-    setScore = (value) => {
+    setScoreTo = (value) => {
         this.score = value
         this.scoreElement.innerText = value.toString()
         this.updateHighscore()
@@ -205,141 +158,140 @@ class Board {
 
     }
 
-    addNumber = (initialX, initialY, value) => {
-        this.structure[initialX][initialY] = new Number(initialX, initialY, value, this)
+    addNumberSquare = (initialX, initialY, value) => {
+        this.currentStateTable[initialX][initialY] = new NumberSquare
+    (initialX, initialY, value, this)
     }
-
-    // It would be nice to unify these 4 very similar functions into one
 
     swipeRight = async () => {
         for (let i = 0; i <= 3; ++i) {
             let columnToCompare = 3;
             for (let j = 2; j >= 0; --j) {
-                let current = this.structure[j][i]
-                let main    = this.structure[columnToCompare][i]
+                let current = this.currentStateTable[j][i]
+                let main    = this.currentStateTable[columnToCompare][i]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
-                    await current.move(columnToCompare, i)
+                } else if (main === undefined) {
+                    await current.moveTo(columnToCompare, i)
                     continue
                 }
-                let currentNumberValue = this.structure[j][i].value
-                let mainNumberValue = this.structure[columnToCompare][i].value
+                let currentNumberValue = this.currentStateTable[j][i].value
+                let mainNumberValue = this.currentStateTable[columnToCompare][i].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    current.setValue(2 * mainNumberValue)
-                    await current.move(columnToCompare, i)
+                    current.setValueTo(2 * mainNumberValue)
+                    await current.moveTo(columnToCompare, i)
                     mainNumberValue *= 2
-                    current.setValue(mainNumberValue)
+                    current.setValueTo(mainNumberValue)
                     columnToCompare--
                     this.increaseScore(mainNumberValue)
                 } else {
                     columnToCompare--
-                    await current.move(columnToCompare, i)
+                    await current.moveTo(columnToCompare, i)
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
     swipeLeft = async () => {
         for (let i = 0; i <= 3; ++i) {
             let columnToCompare = 0;
             for (let j = 1; j <= 3; ++j) {
-                let current = this.structure[j][i]
-                let main    = this.structure[columnToCompare][i]
+                let current = this.currentStateTable[j][i]
+                let main    = this.currentStateTable[columnToCompare][i]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
-                    await current.move(columnToCompare, i)
+                } else if (main === undefined) {
+                    await current.moveTo(columnToCompare, i)
                     continue
                 }
-                let currentNumberValue = this.structure[j][i].value
-                let mainNumberValue = this.structure[columnToCompare][i].value
+                let currentNumberValue = this.currentStateTable[j][i].value
+                let mainNumberValue = this.currentStateTable[columnToCompare][i].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    current.setValue(2 * mainNumberValue)
-                    await current.move(columnToCompare, i)
+                    current.setValueTo(2 * mainNumberValue)
+                    await current.moveTo(columnToCompare, i)
                     mainNumberValue *= 2
-                    current.setValue(mainNumberValue)
+                    current.setValueTo(mainNumberValue)
                     columnToCompare++
                     this.increaseScore(mainNumberValue)
                 } else {
                     columnToCompare++
-                    await current.move(columnToCompare, i)
+                    await current.moveTo(columnToCompare, i)
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
     swipeUp = async () => {
         for (let j = 0; j <= 3; ++j) {
             let rowToCompare = 0;
             for (let i = 1; i <= 3; ++i) {
-                let current = this.structure[j][i]
-                let main    = this.structure[j][rowToCompare]
+                let current = this.currentStateTable[j][i]
+                let main    = this.currentStateTable[j][rowToCompare]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
-                    await current.move(j, rowToCompare)
+                } else if (main === undefined) {
+                    await current.moveTo(j, rowToCompare)
                     continue
                 }
-                let currentNumberValue = this.structure[j][i].value
-                let mainNumberValue = this.structure[j][rowToCompare].value
+                let currentNumberValue = this.currentStateTable[j][i].value
+                let mainNumberValue = this.currentStateTable[j][rowToCompare].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    current.setValue(2 * mainNumberValue)
-                    await current.move(j, rowToCompare)
+                    current.setValueTo(2 * mainNumberValue)
+                    await current.moveTo(j, rowToCompare)
                     mainNumberValue *= 2
-                    current.setValue(mainNumberValue)
+                    current.setValueTo(mainNumberValue)
                     rowToCompare++
                     this.increaseScore(mainNumberValue)
                 } else {
                     rowToCompare++
-                    await current.move(j, rowToCompare)
+                    await current.moveTo(j, rowToCompare)
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
     swipeDown = async () => {
         for (let j = 0; j <= 3; ++j) {
             let rowToCompare = 3;
             for (let i = 2; i >= 0; --i) {
-                let current = this.structure[j][i]
-                let main    = this.structure[j][rowToCompare]
+                let current = this.currentStateTable[j][i]
+                let main    = this.currentStateTable[j][rowToCompare]
 
-                if (current === undef) {
+                if (current === undefined) {
                     continue
-                } else if (main === undef) {
-                    await current.move(j, rowToCompare)
+                } else if (main === undefined) {
+                    await current.moveTo(j, rowToCompare)
                     continue
                 }
-                let currentNumberValue = this.structure[j][i].value
-                let mainNumberValue = this.structure[j][rowToCompare].value
+                let currentNumberValue = this.currentStateTable[j][i].value
+                let mainNumberValue = this.currentStateTable[j][rowToCompare].value
                 
                 if (mainNumberValue === currentNumberValue) {
-                    current.setValue(2 * mainNumberValue)
-                    await current.move(j, rowToCompare)
+                    current.setValueTo(2 * mainNumberValue)
+                    await current.moveTo(j, rowToCompare)
                     mainNumberValue *= 2
-                    current.setValue(mainNumberValue)
+                    current.setValueTo(mainNumberValue)
                     rowToCompare--
                     this.increaseScore(mainNumberValue)
                 } else {
                     rowToCompare--
-                    await current.move(j, rowToCompare)
+                    await current.moveTo(j, rowToCompare)
                 }
             }
         }
-        this.spawnRandomNumber()
+        this.spawnRandomNumberSquare()
     }
 
-    spawnRandomNumber = () => {
+    spawnRandomNumberSquare = () => {
         function getRandomNatural(max) {
             if (max < 1) {
                 throw new RangeError("getRandomNatural takes a number > 1 as argument")
@@ -347,12 +299,11 @@ class Board {
             return 1 + Math.round((max - 1) * Math.random())
         }
 
-
-        const emptyNumbers = []
+        const emptyCells = []
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
-                if (!this.structure[i][j]) {
-                    emptyNumbers.push([i, j])
+                if (!this.currentStateTable[i][j]) {
+                    emptyCells.push([i, j])
                 }
             }
         }
@@ -361,17 +312,18 @@ class Board {
         } else if (this.isFull()) {
             return
         } else {
-            const newNumberCoordinates = emptyNumbers[getRandomNatural(emptyNumbers.length) - 1]
-            this.addNumber(newNumberCoordinates[0], newNumberCoordinates[1], getRandomNatural(2))
+            const newSquareCoordinates = emptyCells[getRandomNatural(emptyCells.length) - 1]
+            this.addNumberSquare(newSquareCoordinates[0], newSquareCoordinates[1], getRandomNatural(2))
         }
     }
 
-    // .isFull() returns true iff every cell of the board is occupied with a Number
+    // .isFull() returns true iff every cell of the board is occupied with a NumberSquare
+
 
     isFull = () => {
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
-                if (this.structure[i][j] === undef) {
+                if (this.currentStateTable[i][j] === undefined) {
                     return false
                 }
             }
@@ -387,7 +339,7 @@ class Board {
         }
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
-                const currentNumber = this.structure[i][j]
+                const currentSquare = this.currentStateTable[i][j]
                 const adjacentPositions = [
                     [i, j + 1],
                     [i, j - 1],
@@ -400,8 +352,8 @@ class Board {
                     if (adjacentX > 3 || adjacentX < 0 || adjacentY > 3 || adjacentY < 0) {
                         continue
                     }
-                    const adjacentNumber = this.structure[adjacentX][adjacentY]
-                    if (adjacentNumber != undef && adjacentNumber.value === currentNumber.value) {
+                    const adjacentSquare = this.currentStateTable[adjacentX][adjacentY]
+                    if (adjacentSquare != undefined && adjacentSquare.value === currentSquare.value) {
                         return false
                     }
                 }
@@ -412,11 +364,11 @@ class Board {
     }
 
     openGameOverBanner = () => {
-        gameOverBanner.classList.add("active")
+        this.gameOverBanner.classList.add("active")
     }
 
     closeGameOverBanner = () => {
-        gameOverBanner.classList.remove("active")
+        this.gameOverBanner.classList.remove("active")
     }
 
     arrowKeysHandler = ((e) => {
@@ -444,93 +396,20 @@ class Board {
     reset = () => {
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
-                if (this.structure[i][j])
-                    this.structure[i][j].delete()
+                if (this.currentStateTable[i][j])
+                    this.currentStateTable[i][j].delete()
                 }
             }
-        this.setScore(0)
+        this.setScoreTo(0)
         this.gameOverFlag = false
         this.closeGameOverBanner()
 
         // here actually some random setup should appear, but I just coded it for now
 
-        mainBoard.addNumber(0, 0, 1)
-        mainBoard.addNumber(0, 1, 4)
-        mainBoard.addNumber(0, 2, 2)
+        this.addNumberSquare(0, 0, 1)
+        this.addNumberSquare(0, 1, 4)
+        this.addNumberSquare(0, 2, 2)
     }
  }
 
-// experimental initial setup of the board
-
 const mainBoard = new Board
-
-mainBoard.addNumber(0, 0, 1)
-mainBoard.addNumber(0, 1, 4)
-mainBoard.addNumber(0, 2, 2)
-
-
-
-// document.addEventListener('touchstart', handleTouchStart, false);        
-// document.addEventListener('touchmove', handleTouchMove, false);
-
-// var xDown = null;                                                        
-// var yDown = null;
-
-// function getTouches(evt) {
-//   return evt.touches ||             // browser API
-//          evt.originalEvent.touches; // jQuery
-// }                                                     
-                                                                         
-// function handleTouchStart(evt) {
-//     evt.preventDefault()
-//     const firstTouch = getTouches(evt)[0];                                      
-//     xDown = firstTouch.clientX;                                      
-//     yDown = firstTouch.clientY;                                      
-// };                                                
-                                                                         
-// function handleTouchMove(evt) {
-//     evt.preventDefault()
-//     if ( ! xDown || ! yDown ) {
-//         return;
-//     }
-
-//     var xUp = evt.touches[0].clientX;                                    
-//     var yUp = evt.touches[0].clientY;
-
-//     var xDiff = xDown - xUp;
-//     var yDiff = yDown - yUp;
-                                                                         
-//     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
-//         if ( xDiff > 0 ) {
-//             mainBoard.swipeLeft()
-//         } else {
-//             mainBoard.swipeRight()
-//         }                       
-//     } else {
-//         if ( yDiff > 0 ) {
-//             mainBoard.swipeUp()
-//         } else { 
-//             mainBoard.swipeDown()
-//         }                                                                 
-//     }
-//     /* reset values */
-//     xDown = null;
-//     yDown = null;                                             
-// };
-
-
-
-// mainBoard.addNumber(0, 3, 4)
-// mainBoard.addNumber(1, 0, 2)
-// mainBoard.addNumber(1, 1, 8)
-// mainBoard.addNumber(1, 2, 32)
-// mainBoard.addNumber(1, 3, 16)
-// mainBoard.addNumber(2, 0, 64)
-// mainBoard.addNumber(2, 1, 4096)
-// mainBoard.addNumber(2, 2, 2048)
-// mainBoard.addNumber(2, 3, 1024)
-// mainBoard.addNumber(3, 0, 512)
-// mainBoard.addNumber(3, 1, 256)
-// mainBoard.addNumber(3, 3, 128)
-// mainBoard.addNumber(3, 2, 8192)
-   
