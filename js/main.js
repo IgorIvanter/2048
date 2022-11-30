@@ -286,22 +286,14 @@ class Board {
         if (this.gameOverFlag) {
             return
         }
-        switch (e.key) {
-            case 'ArrowUp':
-                this.swipeUp();
-                break;
-            case 'ArrowDown':
-                this.swipeDown();
-                break;
-            case 'ArrowLeft':
+        if (e.key == 'ArrowUp' || e.key == 'w' || e.key == 'W')
+            this.swipeUp();
+        else if (e.key == 'ArrowDown' || e.key == 's' || e.key == 'S')
+            this.swipeDown();
+        else if (e.key == 'ArrowLeft' || e.key == 'a' || e.key == 'A')
                 this.swipeLeft();
-                break;
-            case 'ArrowRight':
+        else if (e.key == 'ArrowRight' || e.key == 'd' || e.key == 'D')
                 this.swipeRight();
-                break;
-            default:
-                break
-        }
     })
 
     reset = () => {
