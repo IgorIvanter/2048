@@ -45,9 +45,20 @@ class Board {
         this.addNumberSquare(0, 3, 4)
         this.addNumberSquare(3, 1, 2)
 
-        // Adding the arrow keys handler for controls
+        // Adding the arrow/wasd keys handler
 
         window.addEventListener("keydown", this.arrowKeysHandler)
+
+        // Adding click handlers to the four control buttons on mobile
+
+        document.getElementById("btn-left").addEventListener("click", this.swipeLeft)
+        document.getElementById("btn-right").addEventListener("click", this.swipeRight)
+        document.getElementById("btn-up").addEventListener("click", this.swipeUp)
+        document.getElementById("btn-down").addEventListener("click", this.swipeDown)
+
+        // Adding click handler to the restart button
+
+        document.getElementById("restart-btn").addEventListener("click", this.reset)
     }
 
     setScoreTo = (value) => {
