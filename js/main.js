@@ -59,9 +59,6 @@ class Board {
         // Adding click handler to the restart button
 
         document.getElementById("restart-btn").addEventListener("click", this.reset)
-        document.getElementById("color-btn").addEventListener("click", this.changeColors)
-        document.getElementById("help-btn").addEventListener("click", this.helpPrompt)
-
     }
 
     setScoreTo = (value) => {
@@ -309,79 +306,6 @@ class Board {
         else if (e.key == 'ArrowRight' || e.key == 'd' || e.key == 'D')
                 this.swipeRight();
     })
-
-    changeColors = () => {
-        if (document.querySelector("input") == null) {
-            const main = document.querySelector("main");
-
-            const div = document.createElement("div");
-            div.setAttribute('id','colorDiv');
-
-            let input = document.createElement("input");
-            input.type = "color";
-
-            const ok = document.createElement("button");
-            ok.setAttribute('id','okC-btn');
-            ok.innerText = "OK";
-
-            const reset = document.createElement("button");
-            reset.setAttribute('id','resetC-btn');
-            reset.innerText = "Reset";
-
-            const p = document.createElement("p");
-            p.innerText = "Pick Background color:  ";
-            p.style.display = "inline";
-
-            div.appendChild(p);
-            div.appendChild(input);
-            div.appendChild(ok);
-            div.appendChild(reset)
-            main.insertBefore(div, main.firstChild);
-
-            document.getElementById("okC-btn").addEventListener("click", this.changeColorsOK)
-            document.getElementById("resetC-btn").addEventListener("click", this.resetColors)
-
-        }
-        else{
-            const divToDelete = document.querySelector("#colorDiv");
-            divToDelete.parentNode.removeChild(divToDelete);
-        }
-    }
-
-    resetColors = () => {
-        const body = document.querySelector("body");
-        body.style.backgroundColor = '#2f4f4f';
-        const divToDelete = document.querySelector("#colorDiv");
-        divToDelete.parentNode.removeChild(divToDelete);
-    }
-
-    changeColorsOK = () => {
-        let input = document.querySelector("input");
-        const body = document.querySelector("body");
-        let pickedColor = input.value;
-        body.style.backgroundColor = pickedColor;
-        const divToDelete = document.querySelector("#colorDiv");
-        divToDelete.parentNode.removeChild(divToDelete);
-    }
-
-    helpPrompt = () => {
-        if (document.querySelector("#help") == null) {
-            const main = document.querySelector("main");
-            const div = document.createElement("div");
-            div.setAttribute('id','help');
-            const p = document.createElement("p");
-            p.innerText = "Use WASD or the Arrow Keys!";
-            p.style.backgroundColor = 'white';
-            p.style.textAlign = "center";
-            p.style.fontSize = "150%";
-            div.appendChild(p);
-            main.insertBefore(div, main.firstChild);
-        }
-        else{
-            const divToDelete = document.querySelector("#help");
-            divToDelete.parentNode.removeChild(divToDelete);
-        }
-    }
 
     reset = () => {
         for (let i = 0; i <= 3; i++) {
