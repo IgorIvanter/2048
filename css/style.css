@@ -149,22 +149,6 @@ main {
     display: none;
 }
 
-#color-btn{
-    position: fixed;
-    bottom: 50%;
-    right: 0;
-    background-color: orange;
-    border: none;
-}
-
-#help-btn{
-    position: fixed;
-    top: 0%;
-    right: 0;
-    background-color: orange;
-    border: none;
-}
-
 @media (max-width: 990px) {
     .btn-container {
         display: flex;
@@ -188,11 +172,5 @@ main {
     .btn-container > button:active {
         opacity: 0.4;
         background-color: orangered;
-    }
-}
-
-@media (max-width: 700px) {
-    .side-btn{
-        display: none;
     }
 }
