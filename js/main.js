@@ -56,6 +56,11 @@ class Board {
         document.getElementById("btn-up").addEventListener("click", this.swipeUp)
         document.getElementById("btn-down").addEventListener("click", this.swipeDown)
 
+        document.getElementById("btn-leftTable").addEventListener("click", this.swipeLeft)
+        document.getElementById("btn-rightTable").addEventListener("click", this.swipeRight)
+        document.getElementById("btn-upTable").addEventListener("click", this.swipeUp)
+        document.getElementById("btn-downTable").addEventListener("click", this.swipeDown)
+
         // Adding click handler to the restart button
 
         document.getElementById("restart-btn").addEventListener("click", this.reset)
