@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Didact+Gothic&family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap');
+
 /* Importing DM-Sans, Abril Fatface, Lato, Didact Gothic, Source Serif Pro from Google Fonts */
 
 :root {
@@ -149,6 +151,22 @@ main {
     display: none;
 }
 
+#color-btn{
+    position: fixed;
+    bottom: 50%;
+    right: 0;
+    background-color: orange;
+    border: none;
+}
+
+#help-btn{
+    position: fixed;
+    top: 0%;
+    right: 0;
+    background-color: orange;
+    border: none;
+}
+
 #btn-upTable, #btn-downTable{
     font-size: 50px;
     display: block;
@@ -216,6 +234,12 @@ main {
     }
 
     #btn-upTable, #btn-downTable, #btn-leftTable, #btn-rightTable {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .side-btn{
         display: none;
     }
 }

@@ -20,27 +20,27 @@ class Board {
         ]
 
         this.SquareColorByValue = {
-            "1"     : "lightgreen",
-            "2"     : "green",
-            "4"     : "#61c900",
-            "8"     : "#F8F658",
-            "16"    : "#FFBB00",
-            "32"    : "#ED8111",
-            "64"    : "#611C07",
-            "128"   : "#510000",
-            "256"   : "#810000",
-            "512"   : "#f13200",
-            "1024"  : "#ff0000",
-            "2048"  : "#ff0044",
-            "4096"  : "#ff009f",
-            "8192"  : "#ff40ff"
+            "1": "lightgreen",
+            "2": "green",
+            "4": "#61c900",
+            "8": "#F8F658",
+            "16": "#FFBB00",
+            "32": "#ED8111",
+            "64": "#611C07",
+            "128": "#510000",
+            "256": "#810000",
+            "512": "#f13200",
+            "1024": "#ff0000",
+            "2048": "#ff0044",
+            "4096": "#ff009f",
+            "8192": "#ff40ff"
         }
 
         this.gameOverBanner = document.getElementById("game-over-banner")
         this.gameOverFlag = false
 
         // Initial setup:
-        
+
         this.addNumberSquare(0, 0, 1)
         this.addNumberSquare(0, 3, 4)
         this.addNumberSquare(3, 1, 2)
@@ -55,7 +55,6 @@ class Board {
         document.getElementById("btn-right").addEventListener("click", this.swipeRight)
         document.getElementById("btn-up").addEventListener("click", this.swipeUp)
         document.getElementById("btn-down").addEventListener("click", this.swipeDown)
-
         document.getElementById("btn-leftTable").addEventListener("click", this.swipeLeft)
         document.getElementById("btn-rightTable").addEventListener("click", this.swipeRight)
         document.getElementById("btn-upTable").addEventListener("click", this.swipeUp)
@@ -64,6 +63,9 @@ class Board {
         // Adding click handler to the restart button
 
         document.getElementById("restart-btn").addEventListener("click", this.reset)
+        document.getElementById("color-btn").addEventListener("click", this.changeColors)
+        document.getElementById("help-btn").addEventListener("click", this.helpPrompt)
+
     }
 
     setScoreTo = (value) => {
@@ -77,7 +79,7 @@ class Board {
         this.score += addedScore
         this.scoreElement.innerText = this.score.toString()
         this.updateHighscore()
-    } 
+    }
 
     updateHighscore = () => {
         this.highscore = Math.max(this.score, this.highscore)
@@ -87,7 +89,7 @@ class Board {
 
     addNumberSquare = (initialX, initialY, value) => {
         this.currentStateTable[initialX][initialY] = new NumberSquare
-    (initialX, initialY, value, this)
+        (initialX, initialY, value, this)
     }
 
     swipeRight = async () => {
@@ -95,7 +97,7 @@ class Board {
             let columnToCompare = 3;
             for (let j = 2; j >= 0; --j) {
                 let current = this.currentStateTable[j][i]
-                let main    = this.currentStateTable[columnToCompare][i]
+                let main = this.currentStateTable[columnToCompare][i]
 
                 if (current === undefined) {
                     continue
@@ -105,7 +107,7 @@ class Board {
                 }
                 let currentNumberValue = this.currentStateTable[j][i].value
                 let mainNumberValue = this.currentStateTable[columnToCompare][i].value
-                
+
                 if (mainNumberValue === currentNumberValue) {
                     current.setValueTo(2 * mainNumberValue)
                     await current.moveTo(columnToCompare, i)
@@ -127,7 +129,7 @@ class Board {
             let columnToCompare = 0;
             for (let j = 1; j <= 3; ++j) {
                 let current = this.currentStateTable[j][i]
-                let main    = this.currentStateTable[columnToCompare][i]
+                let main = this.currentStateTable[columnToCompare][i]
 
                 if (current === undefined) {
                     continue
@@ -137,7 +139,7 @@ class Board {
                 }
                 let currentNumberValue = this.currentStateTable[j][i].value
                 let mainNumberValue = this.currentStateTable[columnToCompare][i].value
-                
+
                 if (mainNumberValue === currentNumberValue) {
                     current.setValueTo(2 * mainNumberValue)
                     await current.moveTo(columnToCompare, i)
@@ -159,7 +161,7 @@ class Board {
             let rowToCompare = 0;
             for (let i = 1; i <= 3; ++i) {
                 let current = this.currentStateTable[j][i]
-                let main    = this.currentStateTable[j][rowToCompare]
+                let main = this.currentStateTable[j][rowToCompare]
 
                 if (current === undefined) {
                     continue
@@ -169,7 +171,7 @@ class Board {
                 }
                 let currentNumberValue = this.currentStateTable[j][i].value
                 let mainNumberValue = this.currentStateTable[j][rowToCompare].value
-                
+
                 if (mainNumberValue === currentNumberValue) {
                     current.setValueTo(2 * mainNumberValue)
                     await current.moveTo(j, rowToCompare)
@@ -191,7 +193,7 @@ class Board {
             let rowToCompare = 3;
             for (let i = 2; i >= 0; --i) {
                 let current = this.currentStateTable[j][i]
-                let main    = this.currentStateTable[j][rowToCompare]
+                let main = this.currentStateTable[j][rowToCompare]
 
                 if (current === undefined) {
                     continue
@@ -201,7 +203,7 @@ class Board {
                 }
                 let currentNumberValue = this.currentStateTable[j][i].value
                 let mainNumberValue = this.currentStateTable[j][rowToCompare].value
-                
+
                 if (mainNumberValue === currentNumberValue) {
                     current.setValueTo(2 * mainNumberValue)
                     await current.moveTo(j, rowToCompare)
@@ -307,18 +309,247 @@ class Board {
         else if (e.key == 'ArrowDown' || e.key == 's' || e.key == 'S')
             this.swipeDown();
         else if (e.key == 'ArrowLeft' || e.key == 'a' || e.key == 'A')
-                this.swipeLeft();
+            this.swipeLeft();
         else if (e.key == 'ArrowRight' || e.key == 'd' || e.key == 'D')
-                this.swipeRight();
+            this.swipeRight();
     })
+
+    changeColors = () => {
+        if (document.querySelector("#input") == null) {
+            const main = document.querySelector("main");
+
+            const div = document.createElement("div");
+            div.setAttribute('id', 'colorDiv');
+
+            let input = document.createElement("input");
+            input.setAttribute('id', 'input');
+            input.type = "color";
+
+            const ok = document.createElement("button");
+            ok.setAttribute('id', 'okC-btn');
+            ok.innerText = "Select";
+            ok.style.fontFamily = "'Roboto', sans-serif";
+
+            const reset = document.createElement("button");
+            reset.setAttribute('id', 'resetC-btn');
+            reset.innerText = "Reset";
+            reset.style.fontFamily = "'Roboto', sans-serif";
+
+            const p = document.createElement("p");
+            p.innerText = "Pick Background color:  ";
+            p.style.display = "inline";
+            p.style.fontSize = "30px";
+            p.style.backgroundColor = "white";
+            p.style.fontFamily = "'Roboto', sans-serif";
+
+
+            div.appendChild(p);
+            div.appendChild(input);
+            div.appendChild(ok);
+            div.appendChild(reset);
+
+            if (document.querySelector("#input2") == null) {
+                const div2 = document.createElement("div");
+                div2.setAttribute('id', 'colorDiv2');
+
+                let input2 = document.createElement("input");
+                input2.setAttribute('id', 'input2');
+                input2.type = "color";
+
+                const ok2 = document.createElement("button");
+                ok2.setAttribute('id', 'okC-btn2');
+                ok2.innerText = "Select";
+                ok2.style.fontFamily = "'Roboto', sans-serif";
+
+                const reset2 = document.createElement("button");
+                reset2.setAttribute('id', 'resetC-btn2');
+                reset2.innerText = "Reset";
+                reset2.style.fontFamily = "'Roboto', sans-serif";
+
+                const p2 = document.createElement("p");
+                p2.innerText = "Pick Secondary color:  ";
+                p2.style.display = "inline";
+                p2.style.fontSize = "30px";
+                p2.style.backgroundColor = "white";
+                p2.style.fontFamily = "'Roboto', sans-serif";
+
+                div2.appendChild(p2);
+                div2.appendChild(input2);
+                div2.appendChild(ok2);
+                div2.appendChild(reset2);
+
+                main.insertBefore(div2, main.firstChild);
+            }
+            main.insertBefore(div, main.firstChild);
+
+            document.getElementById("okC-btn").addEventListener("click", this.changeBackgroundColors);
+            document.getElementById("resetC-btn").addEventListener("click", this.resetBackgroundColors);
+            document.getElementById("okC-btn2").addEventListener("click", this.changeSecondaryColors);
+            document.getElementById("resetC-btn2").addEventListener("click", this.resetSecondaryColors);
+        } else if (document.querySelector("#input2") == null) {
+            const divToDelete = document.querySelector("#colorDiv");
+            divToDelete.parentNode.removeChild(divToDelete);
+
+            const main = document.querySelector("main");
+
+            const div = document.createElement("div");
+            div.setAttribute('id', 'colorDiv');
+
+            let input = document.createElement("input");
+            input.setAttribute('id', 'input');
+            input.type = "color";
+
+            const ok = document.createElement("button");
+            ok.setAttribute('id', 'okC-btn');
+            ok.innerText = "Select";
+            ok.style.fontFamily = "'Roboto', sans-serif";
+
+            const reset = document.createElement("button");
+            reset.setAttribute('id', 'resetC-btn');
+            reset.innerText = "Reset";
+            reset.style.fontFamily = "'Roboto', sans-serif";
+
+            const p = document.createElement("p");
+            p.innerText = "Pick Background color:  ";
+            p.style.display = "inline";
+            p.style.fontSize = "30px";
+            p.style.backgroundColor = "white";
+            p.style.fontFamily = "'Roboto', sans-serif";
+
+
+            div.appendChild(p);
+            div.appendChild(input);
+            div.appendChild(ok);
+            div.appendChild(reset);
+
+            if (document.querySelector("#input2") == null) {
+                const div2 = document.createElement("div");
+                div2.setAttribute('id', 'colorDiv2');
+
+                let input2 = document.createElement("input");
+                input2.setAttribute('id', 'input2');
+                input2.type = "color";
+
+                const ok2 = document.createElement("button");
+                ok2.setAttribute('id', 'okC-btn2');
+                ok2.innerText = "Select";
+                ok2.style.fontFamily = "'Roboto', sans-serif";
+
+                const reset2 = document.createElement("button");
+                reset2.setAttribute('id', 'resetC-btn2');
+                reset2.innerText = "Reset";
+                reset2.style.fontFamily = "'Roboto', sans-serif";
+
+                const p2 = document.createElement("p");
+                p2.innerText = "Pick Secondary color:  ";
+                p2.style.display = "inline";
+                p2.style.fontSize = "30px";
+                p2.style.backgroundColor = "white";
+                p2.style.fontFamily = "'Roboto', sans-serif";
+
+                div2.appendChild(p2);
+                div2.appendChild(input2);
+                div2.appendChild(ok2);
+                div2.appendChild(reset2);
+
+                main.insertBefore(div2, main.firstChild);
+            }
+            main.insertBefore(div, main.firstChild);
+
+            document.getElementById("okC-btn").addEventListener("click", this.changeBackgroundColors);
+            document.getElementById("resetC-btn").addEventListener("click", this.resetBackgroundColors);
+            document.getElementById("okC-btn2").addEventListener("click", this.changeSecondaryColors);
+            document.getElementById("resetC-btn2").addEventListener("click", this.resetSecondaryColors);
+
+        } else {
+            const divToDelete = document.querySelector("#colorDiv");
+            divToDelete.parentNode.removeChild(divToDelete);
+
+            const divToDelete2 = document.querySelector("#colorDiv2");
+            divToDelete2.parentNode.removeChild(divToDelete2);
+        }
+    }
+
+    resetBackgroundColors = () => {
+        const body = document.querySelector("body");
+        body.style.backgroundColor = '#2f4f4f';
+        const divToDelete = document.querySelector("#colorDiv");
+        divToDelete.parentNode.removeChild(divToDelete);
+    }
+
+    changeBackgroundColors = () => {
+        let input = document.querySelector("#input");
+        const body = document.querySelector("body");
+        let pickedColor = input.value;
+        body.style.backgroundColor = pickedColor;
+        const divToDelete = document.querySelector("#colorDiv");
+        divToDelete.parentNode.removeChild(divToDelete);
+    }
+
+    resetSecondaryColors = () => {
+        const header = document.querySelector("header");
+
+        header.style.color = "orange";
+
+        document.querySelector(".game-over-banner > button").style.backgroundColor = "orange";
+        document.querySelector("#color-btn").style.backgroundColor = "orange";
+        document.querySelector("#help-btn").style.backgroundColor = "orange";
+        document.querySelector("#btn-upTable").style.backgroundColor = "orange";
+        document.querySelector("#btn-downTable").style.backgroundColor = "orange";
+        document.querySelector("#btn-leftTable").style.backgroundColor = "orange";
+        document.querySelector("#btn-rightTable").style.backgroundColor = "orange";
+        document.querySelector("#btn-upTable").style.backgroundColor = "orange";
+
+        const divToDelete = document.querySelector("#colorDiv2");
+        divToDelete.parentNode.removeChild(divToDelete);
+    }
+
+    changeSecondaryColors = () => {
+        let input2 = document.querySelector("#input2");
+        const header = document.querySelector("header");
+        let pickedColor = input2.value;
+
+        header.style.color = pickedColor;
+
+        document.querySelector(".game-over-banner > button").style.backgroundColor = pickedColor;
+        document.querySelector("#color-btn").style.backgroundColor = pickedColor;
+        document.querySelector("#help-btn").style.backgroundColor = pickedColor;
+        document.querySelector("#btn-upTable").style.backgroundColor = pickedColor;
+        document.querySelector("#btn-downTable").style.backgroundColor = pickedColor;
+        document.querySelector("#btn-leftTable").style.backgroundColor = pickedColor;
+        document.querySelector("#btn-rightTable").style.backgroundColor = pickedColor;
+        document.querySelector("#btn-upTable").style.backgroundColor = pickedColor;
+
+
+        const divToDelete = document.querySelector("#colorDiv2");
+        divToDelete.parentNode.removeChild(divToDelete);
+    }
+
+    helpPrompt = () => {
+        if (document.querySelector("#help") == null) {
+            const main = document.querySelector("main");
+            const div = document.createElement("div");
+            div.setAttribute('id', 'help');
+            const p = document.createElement("p");
+            p.innerText = "Use WASD or the Arrow Keys!";
+            p.style.backgroundColor = 'white';
+            p.style.textAlign = "center";
+            p.style.fontSize = "150%";
+            div.appendChild(p);
+            main.insertBefore(div, main.firstChild);
+        } else {
+            const divToDelete = document.querySelector("#help");
+            divToDelete.parentNode.removeChild(divToDelete);
+        }
+    }
 
     reset = () => {
         for (let i = 0; i <= 3; i++) {
             for (let j = 0; j <= 3; j++) {
                 if (this.currentStateTable[i][j])
                     this.currentStateTable[i][j].delete()
-                }
             }
+        }
         this.setScoreTo(0)
         this.gameOverFlag = false
         this.closeGameOverBanner()
@@ -329,6 +560,6 @@ class Board {
         this.addNumberSquare(0, 1, 4)
         this.addNumberSquare(0, 2, 2)
     }
- }
+}
 
 const mainBoard = new Board
