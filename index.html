@@ -8,24 +8,35 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <div class="score-container">
-            <h1 class="game-title">
-                2048
-            </h1>
-            <h3 class="highscore-title">
-                Highscore:
-                <div id="highscore" style="display: inline"></div>
-            </h3>
-            <h3 class="score-title">
-                Score:
-                <div id="score"></div>
-            </h3>
-        </div>
-    </header>
+<header>
+    <div class="score-container">
+        <h1 class="game-title">
+            2048
+        </h1>
+        <h3 class="highscore-title">
+            Highscore:
+            <div id="highscore" style="display: inline"></div>
+        </h3>
+        <h3 class="score-title">
+            Score:
+            <div id="score"></div>
+        </h3>
+    </div>
+</header>
 
-    <main>
-        <div class="table">
+<main>
+    <button class="side-btn" id="help-btn">
+        <img src="https://img.icons8.com/ios/500/help.png"
+             alt="Help button" width="50" height="50">
+    </button>
+    <button class="side-btn" id="color-btn">
+        <img src="https://cdn-icons-png.flaticon.com/512/565/565789.png"
+             alt="Color Customization button" width="50" height="50">
+    </button>
+    <button id="btn-upTable">UP🠹</button>
+    <div id="mid-cont">
+        <button id="btn-leftTable">🠸LEFT</button>
+        <div class="table" style="display: inline-block">
             <div class="game-over-banner" id="game-over-banner">
                 <h1>
                     Game over!
@@ -72,16 +83,19 @@
                 <div class="cell">
                 </div>
                 <div class="cell">
-                </div>        
+                </div>
             </div>
         </div>
-        <div class="btn-container">
-            <button id="btn-left">Left</button>
-            <button id="btn-up">Up</button>
-            <button id="btn-down">Down</button>
-            <button id="btn-right">Right</button>
-        </div>
-    </main>
-    <script type="module" src="js/main.js"></script>
+        <button id="btn-rightTable">RIGHT🠺</button>
+    </div>
+    <button id="btn-downTable">DOWN🠻</button>
+    <div class="btn-container">
+        <button id="btn-left">Left</button>
+        <button id="btn-up">Up</button>
+        <button id="btn-down">Down</button>
+        <button id="btn-right">Right</button>
+    </div>
+</main>
+<script src="js/main.js"></script>
 </body>
 </html>
